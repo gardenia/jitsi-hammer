@@ -30,7 +30,7 @@ import java.io.*;
  * <tt>SsrcProvider</tt> is used to parse "ssrc" element in "description"
  * element of a Jingle IQ
  */
-public class SsrcProvider implements PacketExtensionProvider
+public class SsrcProvider extends ExtensionElementProvider<SsrcPacketExtension>
 {
     /**
      * The name of the "ssrc" element. 
@@ -54,7 +54,18 @@ public class SsrcProvider implements PacketExtensionProvider
      * @throws XmlPullParserException 
      * @throws IOException
      */
-    public PacketExtension parseExtension(XmlPullParser parser)
+    public SsrcPacketExtension parse(XmlPullParser parser, int initialDepth)
+    {
+        try {
+            return parseExtension(parser);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private SsrcPacketExtension parseExtension(XmlPullParser parser)
         throws IOException, XmlPullParserException
     {
         

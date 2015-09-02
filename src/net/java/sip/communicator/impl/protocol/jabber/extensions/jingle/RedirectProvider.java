@@ -15,8 +15,11 @@
  */
 package net.java.sip.communicator.impl.protocol.jabber.extensions.jingle;
 
+import java.io.IOException;
+
 import org.jivesoftware.smack.provider.*;
 import org.xmlpull.v1.*;
+
 
 /**
  * The <tt>RedirectProvider</tt> parses "redirect" elements into {@link
@@ -25,7 +28,7 @@ import org.xmlpull.v1.*;
  * @author Sebastien Vincent
  */
 public class RedirectProvider
-    implements PacketExtensionProvider
+    extends ExtensionElementProvider<RedirectPacketExtension>
 {
     /**
      * Parses a reason extension sub-packet and creates a {@link
@@ -41,9 +44,22 @@ public class RedirectProvider
      * @return a new {@link RedirectPacketExtension} instance.
      * @throws java.lang.Exception if an error occurs parsing the XML.
      */
-    public RedirectPacketExtension parseExtension(XmlPullParser parser)
-        throws Exception
-    {
+
+     @Override
+     public RedirectPacketExtension parse(XmlPullParser parser, int initialDepth)
+     {
+         try {
+             return parseExtension(parser);
+         }
+         catch (Exception e) {
+             e.printStackTrace();
+             return null;
+         }
+     }
+
+     private RedirectPacketExtension parseExtension(XmlPullParser parser)
+             throws Exception
+     {
         String text = null;
         boolean done = false;
         int eventType;

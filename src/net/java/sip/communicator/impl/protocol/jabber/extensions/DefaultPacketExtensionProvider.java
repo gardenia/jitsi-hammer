@@ -29,7 +29,7 @@ import org.xmlpull.v1.*;
  * @author Emil Ivov
  */
 public class DefaultPacketExtensionProvider<C extends AbstractPacketExtension>
-    implements PacketExtensionProvider
+    extends ExtensionElementProvider
 {
     /**
      * The <tt>Logger</tt> used by the <tt>DefaultPacketExtensionProvider</tt>
@@ -65,7 +65,16 @@ public class DefaultPacketExtensionProvider<C extends AbstractPacketExtension>
      *
      * @throws java.lang.Exception if an error occurs parsing the XML.
      */
-    public C parseExtension(XmlPullParser parser) throws Exception
+    public C parse(XmlPullParser parser, int initialDepth) {
+        try {
+            return parseHelper(parser);
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    public C parseHelper(XmlPullParser parser) throws Exception
     {
         C packetExtension = packetClass.newInstance();
 
@@ -98,8 +107,8 @@ public class DefaultPacketExtensionProvider<C extends AbstractPacketExtension>
 
             if (eventType == XmlPullParser.START_TAG)
             {
-                PacketExtensionProvider provider
-                    = (PacketExtensionProvider)ProviderManager.getInstance()
+                ExtensionElementProvider provider
+                    = (ExtensionElementProvider)ProviderManager
                         .getExtensionProvider( elementName, namespace );
 
                 if(provider == null)
@@ -110,8 +119,8 @@ public class DefaultPacketExtensionProvider<C extends AbstractPacketExtension>
                 }
                 else
                 {
-                    PacketExtension childExtension
-                        = provider.parseExtension(parser);
+                    ExtensionElement childExtension
+                        = (ExtensionElement) provider.parse(parser);
 
                     if(namespace != null)
                     {

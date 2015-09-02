@@ -26,7 +26,7 @@ import java.util.*;
  * This class is used to store attributes of XML sub-documents
  * starting with "media" tag.
  */
-public class MediaPacketExtension implements PacketExtension
+public class MediaPacketExtension implements ExtensionElement
 {
     /**
      * The namespace of this <tt>MediaPacketExtension</tt>

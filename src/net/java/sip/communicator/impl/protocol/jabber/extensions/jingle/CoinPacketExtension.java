@@ -33,7 +33,7 @@ public class CoinPacketExtension
     /**
      * Namespace.
      */
-    public final static String NAMESPACE = "";
+    public final static String NAMESPACE = "urn:xmpp:jingle:apps:dtls:0";
 
     /**
      * IsFocus attribute name.

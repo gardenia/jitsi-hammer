@@ -288,7 +288,7 @@ public class ConferenceDescriptionPacketExtension
      * Parses elements with the <tt>NAMESPACE</tt> namespace.
      */
     public static class Provider
-        implements PacketExtensionProvider
+        extends ExtensionElementProvider<ConferenceDescriptionPacketExtension>
     {
         /**
          * Creates a <tt>ConferenceDescriptionPacketExtension</tt> by parsing
@@ -297,7 +297,17 @@ public class ConferenceDescriptionPacketExtension
          * @return the created <tt>ConferenceDescriptionPacketExtension</tt>.
          * @throws Exception
          */
-        public PacketExtension parseExtension(XmlPullParser parser)
+        public ConferenceDescriptionPacketExtension parse(XmlPullParser parser, int initialDepth)
+        {
+            try {
+                return parseHelper(parser);
+            }
+            catch (Exception e) {
+                return null;
+            }
+        }
+
+        public ConferenceDescriptionPacketExtension parseHelper(XmlPullParser parser)
                 throws Exception
         {
             ConferenceDescriptionPacketExtension packetExtension

@@ -50,7 +50,7 @@ public class MyPacketListener implements PacketListener
         this.myID = id;
     }
 
-    public void processPacket(Packet packet) 
+    public void processPacket(Stanza packet) 
     {
         /*
          * When a packet is received, it checks if this packet is a Message.
@@ -70,7 +70,7 @@ public class MyPacketListener implements PacketListener
                 {
                     muc.sendMessage("C'est pas faux.");
                 }
-                catch (XMPPException e)
+                catch (Exception e)
                 {
                     e.printStackTrace();
                 }

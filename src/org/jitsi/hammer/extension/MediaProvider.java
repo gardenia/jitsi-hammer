@@ -32,7 +32,7 @@ import java.io.*;
  * 
  * It especially correctly parses <source /> lines
  */
-public class MediaProvider implements PacketExtensionProvider
+public class MediaProvider extends ExtensionElementProvider<MediaPacketExtension> 
 {
     /**
      * The name of the "media" element. 
@@ -56,7 +56,18 @@ public class MediaProvider implements PacketExtensionProvider
      * @throws XmlPullParserException 
      * @throws IOException
      */
-    public PacketExtension parseExtension(XmlPullParser parser)
+    public MediaPacketExtension parse(XmlPullParser parser, int initialDepth)
+    {
+        try {
+            return (MediaPacketExtension) parseExtension(parser);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+ 
+    private ExtensionElement parseExtension(XmlPullParser parser)
         throws IOException, XmlPullParserException
     {
         

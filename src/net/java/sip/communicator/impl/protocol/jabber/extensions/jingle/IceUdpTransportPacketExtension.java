@@ -136,11 +136,11 @@ public class IceUdpTransportPacketExtension
      * @return this element's child (local or remote) candidate elements.
      */
     @Override
-    public List<? extends PacketExtension> getChildExtensions()
+    public List<? extends ExtensionElement> getChildExtensions()
     {
-        List<PacketExtension> childExtensions
-            = new ArrayList<PacketExtension>();
-        List<? extends PacketExtension> superChildExtensions
+        List<ExtensionElement> childExtensions
+            = new ArrayList<ExtensionElement>();
+        List<? extends ExtensionElement> superChildExtensions
             = super.getChildExtensions();
 
         childExtensions.addAll(superChildExtensions);
@@ -231,7 +231,7 @@ public class IceUdpTransportPacketExtension
      *
      * @param childExtension the extension we'd like to add here.
      */
-    @Override
+    //@Override
     public void addChildExtension(PacketExtension childExtension)
     {
         //first check for RemoteCandidate because they extend Candidate.

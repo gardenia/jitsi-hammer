@@ -104,6 +104,10 @@ public class JingleIQ extends IQ
     private final List<ContentPacketExtension> contentList
                                 = new ArrayList<ContentPacketExtension>();
 
+    public JingleIQ() {
+        super(ELEMENT_NAME, NAMESPACE);
+    }
+
     /**
      * Returns the XML string of this Jingle IQ's "section" sub-element.
      *
@@ -111,6 +115,7 @@ public class JingleIQ extends IQ
      *
      * @return the child element section of the IQ XML.
      */
+/*
     @Override
     public String getChildElementXML()
     {
@@ -168,6 +173,22 @@ public class JingleIQ extends IQ
         }
 
         return bldr.toString();
+    }
+*/
+
+    @Override
+    protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder buf) {
+        buf.rightAngleBracket();
+
+/*
+        buf.append("<sessionID>").append(getSessionID()).append("</sessionID>");
+
+        if (getNotes() != null) {
+            buf.element("notes", getNotes());
+        }
+*/
+
+        return buf;
     }
 
     /**

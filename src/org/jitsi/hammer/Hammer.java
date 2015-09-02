@@ -260,22 +260,21 @@ public class Hammer
         }
 
         logger.info("Add extension provider for :");
-        ProviderManager manager = ProviderManager.getInstance();
         logger.info("Element name : " + MediaProvider.ELEMENT_NAME
             + ", Namespace : " + MediaProvider.NAMESPACE);
-        manager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
             MediaProvider.ELEMENT_NAME,
             MediaProvider.NAMESPACE,
             new MediaProvider());
         logger.info("Element name : " + SsrcProvider.ELEMENT_NAME
             + ", Namespace : " + SsrcProvider.NAMESPACE);
-        manager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
             SsrcProvider.ELEMENT_NAME,
             SsrcProvider.NAMESPACE,
             new SsrcProvider());
         logger.info("Element name : " + JingleIQ.ELEMENT_NAME
             + ", Namespace : " + JingleIQ.NAMESPACE);
-        manager.addIQProvider(
+        ProviderManager.addIQProvider(
             JingleIQ.ELEMENT_NAME,
             JingleIQ.NAMESPACE,
             new JingleIQProvider());

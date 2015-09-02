@@ -18,11 +18,15 @@ package org.jitsi.hammer;
 
 
 import org.jivesoftware.smack.*;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.muc.*;
-import org.jivesoftware.smackx.packet.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.filter.*;
+import org.jivesoftware.smack.tcp.*;
+import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smackx.disco.*;
+import org.jivesoftware.smackx.nick.packet.Nick;
+import org.jivesoftware.smackx.muc.*;
+
 import org.ice4j.ice.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.service.neomedia.format.*;
@@ -87,7 +91,7 @@ public class FakeUser implements PacketListener
     /**
      * The object use to connect to and then communicate with the XMPP server.
      */
-    private XMPPConnection connection;
+    private XMPPTCPConnection connection;
 
     /**
      * The object use to connect to and then send message to the MUC chatroom.
@@ -240,16 +244,17 @@ public class FakeUser implements PacketListener
         this.nickname = (nickname == null) ? "Anonymous" : nickname;
         fakeUserStats = statisticsEnabled ? new FakeUserStats(nickname) : null;
 
-        config = new ConnectionConfiguration(
-            serverInfo.getXMPPHostname(),
-            serverInfo.getPort(),
-            serverInfo.getXMPPDomain());
-        config.setDebuggerEnabled(smackDebug);
+        XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
+        builder.setHost(serverInfo.getXMPPHostname());
+        builder.setPort(serverInfo.getPort());
+        builder.setServiceName(serverInfo.getXMPPDomain());
+        builder.setSecurityMode(SecurityMode.disabled);
+        builder.setDebuggerEnabled(true);
 
-        connection = new XMPPConnection(config);
+        connection = new XMPPTCPConnection(builder.build());
         connection.addPacketListener(this,new PacketFilter()
         {
-            public boolean accept(Packet packet)
+            public boolean accept(Stanza packet)
             {
                 return (packet instanceof JingleIQ);
             }
@@ -289,10 +294,15 @@ public class FakeUser implements PacketListener
     public void start() throws XMPPException
     {
         logger.info(this.nickname + " : Login anonymously to the XMPP server.");
-        connection.connect();
-        connection.loginAnonymously();
+        try {
+            connection.connect();
+            connection.loginAnonymously();
 
-        connectMUC();
+            connectMUC();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -304,14 +314,21 @@ public class FakeUser implements PacketListener
     {
         logger.info(this.nickname + " : Login with username "
             + username +" to the XMPP server.");
-        connection.connect();
-        connection.login(username,password,"Jitsi-Hammer");
+
+        try {
+            connection.connect();
+            connection.login(username,password,"Jitsi-Hammer");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
 
       //set the highest priority possible
         Presence presence = new Presence(Presence.Type.available);
         presence.setPriority(128);
         presence.setStatus("Fake User");
-        connection.sendPacket(presence);
+        send(presence);
 
         connectMUC();
     }
@@ -324,7 +341,10 @@ public class FakeUser implements PacketListener
     {
         String roomURL = serverInfo.getRoomName()+"@"+serverInfo.getMUCDomain();
         logger.info(this.nickname + " : Trying to connect to MUC " + roomURL);
-        muc = new MultiUserChat(connection, roomURL);
+
+        MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(connection);
+        muc = manager.getMultiUserChat(roomURL);
+
         while(true)
         {
             try
@@ -340,15 +360,18 @@ public class FakeUser implements PacketListener
                 Packet presencePacket = new Presence(Presence.Type.available);
                 presencePacket.setTo(roomURL + "/" + nickname);
                 presencePacket.addExtension(new Nick(nickname));
-                connection.sendPacket(presencePacket);
+                send((Stanza) presencePacket);
             }
-            catch (XMPPException e)
+            //catch (XMPPException e)
+            catch (Exception e)
             {
                 /*
                  * IF the nickname is already taken in the MUC (code 409)
                  * then we append '_' to the nickname, and retry
                  */
-                if((e.getXMPPError() != null) && (e.getXMPPError().getCode() == 409))
+/*
+                XMPPException.XMPPErrorException ee = (XMPPException.XMPPErrorException) e;
+                if((ee.getXMPPError() != null) && (ee.getXMPPError().getCode() == 409))
                 {
                     logger.warn(this.nickname + " nickname already used, "
                         + "changing to " + nickname + '_');
@@ -357,9 +380,10 @@ public class FakeUser implements PacketListener
                 }
                 else
                 {
+*/
                     logger.fatal(this.nickname + " : could not enter MUC",e);
                     muc = null;
-                }
+//                }
             }
             break;
         }
@@ -370,6 +394,16 @@ public class FakeUser implements PacketListener
      * and disconnect from the MUC and the XMPP server
      */
     public void stop()
+    {
+        try {
+            stopHelper();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stopHelper() throws Exception
     {
         logger.info(this.nickname + " : stopping the streams, leaving the MUC"
             + " and disconnecting from the XMPP server");
@@ -383,7 +417,7 @@ public class FakeUser implements PacketListener
         {
             if(sessionAccept != null)
             {
-                connection.sendPacket(
+                send(
                     JinglePacketFactory.createSessionTerminate(
                         sessionAccept.getFrom(),
                         sessionAccept.getTo(),
@@ -392,7 +426,9 @@ public class FakeUser implements PacketListener
                         "Bye Bye"));
             }
 
-            if(muc != null) muc.leave();
+            if(muc != null)
+                muc.leave();
+
             connection.disconnect();
         }
     }
@@ -555,7 +591,7 @@ public class FakeUser implements PacketListener
                 MediaDirection.SENDRECV.toString());
         }
         presencePacketWithSSRC.addExtension(mediaPacket);
-        connection.sendPacket(presencePacketWithSSRC);
+        send((Stanza) presencePacketWithSSRC);
 
 
 
@@ -578,7 +614,7 @@ public class FakeUser implements PacketListener
 
 
         //Send the session-accept IQ
-        connection.sendPacket(sessionAccept);
+        send(sessionAccept);
         logger.info(this.nickname + " : Jingle accept-session message sent");
 
 
@@ -682,7 +718,7 @@ public class FakeUser implements PacketListener
      * Callback function used when a JingleIQ is received by the XMPP connector.
      * @param packet the packet received by the <tt>FakeUser</tt>
      */
-    public void processPacket(Packet packet)
+    public void processPacket(Stanza packet)
     {
         JingleIQ jiq = (JingleIQ)packet;
         ackJingleIQ(jiq);
@@ -723,7 +759,17 @@ public class FakeUser implements PacketListener
     private void ackJingleIQ(JingleIQ packetToAck)
     {
         IQ ackPacket = IQ.createResultIQ(packetToAck);
-        connection.sendPacket(ackPacket);
+        send(ackPacket);
+    }
+
+    private void send(Stanza s)
+    {
+        try {
+            connection.sendPacket(s);
+        }
+        catch (NotConnectedException e) {
+            e.printStackTrace();
+        }
     }
 
 

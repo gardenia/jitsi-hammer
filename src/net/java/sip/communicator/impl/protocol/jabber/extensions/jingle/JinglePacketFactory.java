@@ -67,7 +67,7 @@ public class JinglePacketFactory
 
         sessionInfo.setFrom(from);
         sessionInfo.setTo(to);
-        sessionInfo.setType(IQ.Type.SET);
+        sessionInfo.setType(IQ.Type.set);
 
         sessionInfo.setSID(sid);
         sessionInfo.setAction(JingleAction.SESSION_INFO);
@@ -180,7 +180,7 @@ public class JinglePacketFactory
 
         terminate.setTo(to);
         terminate.setFrom(from);
-        terminate.setType(IQ.Type.SET);
+        terminate.setType(IQ.Type.set);
 
         terminate.setSID(sid);
         terminate.setAction(JingleAction.SESSION_TERMINATE);
@@ -220,7 +220,7 @@ public class JinglePacketFactory
         sessionAccept.setTo(to);
         sessionAccept.setFrom(from);
         sessionAccept.setResponder(from);
-        sessionAccept.setType(IQ.Type.SET);
+        sessionAccept.setType(IQ.Type.set);
 
         sessionAccept.setSID(sid);
         sessionAccept.setAction(JingleAction.SESSION_ACCEPT);
@@ -258,7 +258,7 @@ public class JinglePacketFactory
         descriptionInfo.setTo(to);
         descriptionInfo.setFrom(from);
         descriptionInfo.setResponder(from);
-        descriptionInfo.setType(IQ.Type.SET);
+        descriptionInfo.setType(IQ.Type.set);
 
         descriptionInfo.setSID(sid);
         descriptionInfo.setAction(JingleAction.DESCRIPTION_INFO);
@@ -293,7 +293,7 @@ public class JinglePacketFactory
         sessionInitiate.setTo(to);
         sessionInitiate.setFrom(from);
         sessionInitiate.setInitiator(from);
-        sessionInitiate.setType(IQ.Type.SET);
+        sessionInitiate.setType(IQ.Type.set);
 
         sessionInitiate.setSID(sid);
         sessionInitiate.setAction(JingleAction.SESSION_INITIATE);
@@ -329,7 +329,7 @@ public class JinglePacketFactory
 
         contentAdd.setTo(to);
         contentAdd.setFrom(from);
-        contentAdd.setType(IQ.Type.SET);
+        contentAdd.setType(IQ.Type.set);
 
         contentAdd.setSID(sid);
         contentAdd.setAction(JingleAction.CONTENT_ADD);
@@ -363,7 +363,7 @@ public class JinglePacketFactory
 
         contentAccept.setTo(to);
         contentAccept.setFrom(from);
-        contentAccept.setType(IQ.Type.SET);
+        contentAccept.setType(IQ.Type.set);
 
         contentAccept.setSID(sid);
         contentAccept.setAction(JingleAction.CONTENT_ACCEPT);
@@ -397,7 +397,7 @@ public class JinglePacketFactory
 
         contentReject.setTo(to);
         contentReject.setFrom(from);
-        contentReject.setType(IQ.Type.SET);
+        contentReject.setType(IQ.Type.set);
 
         contentReject.setSID(sid);
         contentReject.setAction(JingleAction.CONTENT_REJECT);
@@ -434,7 +434,7 @@ public class JinglePacketFactory
 
         contentModify.setTo(to);
         contentModify.setFrom(from);
-        contentModify.setType(IQ.Type.SET);
+        contentModify.setType(IQ.Type.set);
 
         contentModify.setSID(sid);
         contentModify.setAction(JingleAction.CONTENT_MODIFY);
@@ -467,7 +467,7 @@ public class JinglePacketFactory
 
         contentRemove.setTo(to);
         contentRemove.setFrom(from);
-        contentRemove.setType(IQ.Type.SET);
+        contentRemove.setType(IQ.Type.set);
 
         contentRemove.setSID(sid);
         contentRemove.setAction(JingleAction.CONTENT_REMOVE);

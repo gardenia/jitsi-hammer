@@ -26,7 +26,7 @@ import org.jivesoftware.smack.packet.*;
  * @author Lyubomir Marinov
  */
 public class ReasonPacketExtension
-    implements PacketExtension
+    implements ExtensionElement
 {
     /**
      * The name space (or rather lack thereof ) that the reason element

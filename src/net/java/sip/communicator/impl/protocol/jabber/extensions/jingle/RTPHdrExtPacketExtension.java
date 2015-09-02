@@ -155,7 +155,7 @@ public class RTPHdrExtPacketExtension
      */
     public String getAttributes()
     {
-        for(PacketExtension ext : getChildExtensions())
+        for(ExtensionElement ext : getChildExtensions())
         {
             if(ext instanceof ParameterPacketExtension)
             {
